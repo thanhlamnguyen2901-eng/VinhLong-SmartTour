@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rạp Chiếu Phim Miệt Vườn - Vĩnh Long Smart Tour</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding-top: 80px; }
+        
+        /* THANH ĐIỀU HƯỚNG ĐỒNG BỘ */
+        #global-nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            background: white; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000; gap: 10px;
+            overflow-x: auto; padding: 0 15px; white-space: nowrap;
+        }
+        .nav-btn { 
+            padding: 10px 18px; background: #e0f2f1; color: #00796b; 
+            text-decoration: none; border-radius: 50px; font-weight: bold; 
+            transition: 0.3s; font-size: 0.9rem; flex-shrink: 0; 
+        }
+        .nav-btn:hover, .nav-btn.active { background: #00796b; color: white; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .section-title { margin: 30px 0 20px; color: #00796b; border-left: 5px solid #00796b; padding-left: 15px; font-size: 1.8rem; }
+        
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .video-card { 
+            background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            scroll-margin-top: 100px; /* Chừa khoảng trống để menu không đè lên video khi tự cuộn */
+            transition: transform 0.3s;
+        }
+        .video-card:hover { transform: translateY(-5px); }
+        .video-card iframe { width: 100%; height: 200px; border: none; }
+        .video-info { padding: 15px; }
+        .video-info h3 { font-size: 1rem; color: #333; line-height: 1.4; }
+
+        /* Tối ưu menu cho điện thoại */
+        @media (max-width: 768px) {
+            #global-nav { justify-content: flex-start; }
+            .section-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="global-nav">
+        <a href="home.html" class="nav-btn">🏠 Trang Chủ</a>
+        <a href="ban-do.html" class="nav-btn">📍 Bản Đồ</a>
+        <a href="chatbot.html" class="nav-btn">💬 Chat AI</a>
+        <a href="ho-chieu.html" class="nav-btn">🏆 Hộ Chiếu</a>
+        <a href="video.html" class="nav-btn active">📺 Rạp Phim</a>
+        <a href="cam-nhan.html" class="nav-btn">✍️ Cảm Nhận</a>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">Nét Đẹp Vùng Đất Vĩnh Long Mới</h2>
+        <div class="video-grid">
+            <div class="video-card" id="ao-ba-om">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/7-U-CpHT0Kw?si=cVzkpj5URAM4MnoZ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Vẻ đẹp huyền bí Ao Bà Om</h3></div>
+            </div>
+            <div class="video-card" id="con-chim">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/ytG64h2Reco?si=GZjqDxAOboo0nRgz" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Cuộc sống Cồn Chim thuận thiên</h3></div>
+            </div>
+            <div class="video-card" id="bao-tang-khmer">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/3nGElIzAh60?si=UX_2MVS9oayaEH2R" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Bảo Tàng Khmer Nam Bộ - Nơi lưu giữ giá trị truyền thống</h3></div>
+            </div>
+            <div class="video-card" id="bao-tang-vinh-long">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/TDJNLYWBzW8?si=uiPYWtKiLyxbfMHI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Bảo Tàng Vĩnh Long hành trình di sản</h3></div>
+            </div>
+            <div class="video-card" id="bien-ba-dong">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/_3RuxymofvY?si=nb_HJGiE1N8f9hkA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Nam Bộ du xuân: Thăm biển Ba Động ngày xuân</h3></div>
+            </div>
+            <div class="video-card" id="bien-con-bung">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/7Q1gWUaej_s?si=pm8H-Hdtdo_G-IP5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Biển Cồn Bửng hoang sơ và bình dị</h3></div>
+            </div>
+            <div class="video-card" id="cau-my-thuan-1">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/aWqUM2XZGPQ?si=qnfN0wH5YmwZTw21" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>20 năm cầu Mỹ Thuận</h3></div>
+            </div>
+            <div class="video-card" id="cau-my-thuan-2">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/hPEm7fcynnE?si=2hvWEUGrhHyUcFd0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Cầu Mỹ Thuận 2 - nối nhịp đôi bờ</h3></div>
+            </div>
+            <div class="video-card" id="cau-rach-mieu">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/WcBcCB0-BKE?si=NaKcydBxjiOMQcUk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Cầu Rạch Miễu - Cây cầu kết nối "ốc đảo" Bến Tre về đất liền</h3></div>
+            </div>
+            <div class="video-card" id="cho-noi-tra-on">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/jZC_z9GhpTs?si=I53IfNcCljtbVI20" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Ký ức chợ Miền Tây - Chợ nổi Trà Ôn</h3></div>
+            </div>
+            <div class="video-card" id="chua-ang">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/DR5KgHizsck?si=VM8ww7YVtXneNn9d" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Khám phá nét đẹp độc đáo của Chùa Âng</h3></div>
+            </div>
+            <div class="video-card" id="chua-hang">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/YQte-xppXTY?si=DxU66w-lGvgtNpvb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Khám phá chùa Hang Trà Vinh</h3></div>
+            </div>
+            <div class="video-card" id="chua-co">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Rh3vUeoVu_c?si=PzKkrmmsg3HQE9Fp" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>CHÙA CÒ TRÀ VINH LINH THIÊNG, ngôi chùa chứa HÀNG TRIỆU CON CÒ</h3></div>
+            </div>
+            <div class="video-card" id="chua-ong">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/8eErgo_VRmo?si=U5BSWCjtZ8HhoAm0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Chùa Ông Thất Phủ Miếu Vĩnh Long</h3></div>
+            </div>
+            <div class="video-card" id="chua-phat-ngoc">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/kV0mdcgX2lI?si=d8XbdYrfbVuhlt1N" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Khám phá chùa Phật Ngọc Xá Lợi Vĩnh Long</h3></div>
+            </div>
+            <div class="video-card" id="chua-phuoc-hau">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/sRla0iov3Rw?si=SIqKqKg6rE36eGdt" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Chùa Phước Hậu - Nổi tiếng với Vườn Kinh 500 câu</h3></div>
+            </div>
+            <div class="video-card" id="chua-tien-chau">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/kOQwBk1p7zY?si=UmdF2Zqlv0Dcdddy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Chuyện xưa Cù lao An Bình : Tiên Châu cổ tự</h3></div>
+            </div>
+            <div class="video-card" id="chua-vam-ray">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Pj5zM53IJTQ?si=il6e9XcwTTEeVIyA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Di tích Chùa Vàm Rây</h3></div>
+            </div>
+            <div class="video-card" id="cu-lao-an-binh">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/CCeu0Wmd6Vw?si=KYDllwnBnE34JisP" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Nam Bộ du ký: Trải nghiệm cù lao An Bình</h3></div>
+            </div>
+            <div class="video-card" id="cu-lao-tan-quy">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/6DcjcaFcOQc?si=8412Jp1esgcYA8wR" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Cù lao Tân Quy mảnh đất phù sa | Ký Sự Cù Lao</h3></div>
+            </div>
+            <div class="video-card" id="chua-hang-2">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/cCPXRHeZTik?si=B6HbyfcCocezHNH6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Chùa Hang (Wat Kompong Ch’rây)</h3></div>
+            </div>
+            <div class="video-card" id="den-tho-bac-ho">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/3l8Q5hCJqkA?si=mSErWZxrVCDOSefJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Đền thờ Bác Hồ - Công trình của trái tim</h3></div>
+            </div>
+            <div class="video-card" id="den-tho-nguyen-thi-dinh">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Nhlftbsdh9s?si=fVTa7TNfp8oYDn9W" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Điểm đến văn hóa: Khu lưu niệm nữ tướng Nguyễn Thị Định</h3></div>
+            </div>
+            <div class="video-card" id="den-tho-nguyen-dinh-chieu">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/x2xBvZMlA3M?si=YOgEA5UmNmNYilQo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Di tích tưởng niệm Nguyễn Đình Chiểu | Ký sự đất và người Bến Tre</h3></div>
+            </div>
+            <div class="video-card" id="kdl-deja">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/S0OcfV_-HhQ?si=bWvTLmS9A49xYrU6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Khám phá Khu Du Lịch Huỳnh Kha</h3></div>
+            </div>
+            <div class="video-card" id="rung-duoc">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/2ODkhnC8I2w?si=-DkONSQiDlkxJF-9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Khu sinh thái Rừng Đước Duyên Hải</h3></div>
+            </div>
+            <div class="video-card" id="kdl-truong-an">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/cVIPwVw_KNU?si=E4DhTtYsWUE4a_Q5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Khám phá Khu du lịch Trường An</h3></div>
+            </div>
+            <div class="video-card" id="kdl-vinh-sang">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/89welkXPjkc?si=X4ebMmX81aKCCA8e" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Khu du lịch Vinh Sang - Hành trình khám phá thiên đường sinh thái bên dòng Cổ Chiên.</h3></div>
+            </div>
+            <div class="video-card" id="khu-tuong-niem-pham-hung">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Uk3djNEcDqE?si=boDyq_yWg5uXRIkp" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Khu lưu niệm Chủ tịch Hội đồng Bộ trưởng Phạm Hùng</h3></div>
+            </div>
+            <div class="video-card" id="khu-tuong-niem-vo-van-kiet">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/cUTJA7MhmIM?si=Sc1Kh7wv2I7SOoc0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Không gian nghệ thuật tại Khu lưu niệm Thủ tướng Chính phủ Võ Văn Kiệt</h3></div>
+            </div>
+            <div class="video-card" id="lang-mai">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/CjU2-kgrdpI?si=ylUO898OO_f-CLzN" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Phóng sự: Về làng mai vàng Phước Định</h3></div>
+            </div>
+            <div class="video-card" id="lo-gach-mang-thit">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Cp5BEdVtuBQ?si=zlQnu-EWjfynVvY7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Vương quốc gạch gốm Mang Thít</h3></div>
+            </div>
+            <div class="video-card" id="nha-co-cai-cuong">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/JifQcUWR624?si=0AOFjezIzQspPaT8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Chuyện xưa Cù lao An Bình - Nhà cổ</h3></div>
+            </div>
+            <div class="video-card" id="nha-co-dai-dien">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/C2KUUpCxRmA?si=X6AHklxxNnmW9S_Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Ký sự truyền hình: Chuyện kể ở Đại Điền</h3></div>
+            </div>
+            <div class="video-card" id="nha-xua-long-ho">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/F6yPB1qgp7g?si=cfmwNUjb01y6-sea" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Nhà xưa Nam Bộ</h3></div>
+            </div>
+            <div class="video-card" id="giao-xu-mac-bac">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/PnedYxzMEvs?si=oz9hYEB1TFsIiJC9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Nhà Thờ Mặc Bắc - ngôi thánh đường cổ kính hơn 100 năm, đẹp nhất tại đồng bằng sông Cửu Long</h3></div>
+            </div>
+            <div class="video-card" id="thien-vien">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Y7RqUPvl-QY?si=RDIs94JG6OfquQYC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Thiền viện Trúc Lâm Trà Vinh</h3></div>
+            </div>
+            <div class="video-card" id="tieu-doan-307">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Ra6vqih0NgA?si=ImKpOcxROS45_3VF" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Về thăm nơi xuất quân của Tiểu đoàn 307.</h3></div>
+            </div>
+            <div class="video-card" id="van-thanh-mieu">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/3vwkwyIYtu4?si=-COEztL0ic-pL4UW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Văn miếu Vĩnh Long - Hồn xưa đất học</h3></div>
+            </div>
+            <div class="video-card" id="vinh-long-moi">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/WLsFRxOKGrY?si=b7iKVsCEFlWRehu8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="video-info"><h3>Vĩnh Long mới - Tiềm năng và thế mạnh</h3></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

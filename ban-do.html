@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Khám Phá Vĩnh Long Smart Tour</title>
+    <style>
+        /* --- CSS CƠ BẢN --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f4f8; overflow-x: hidden; }
+
+        /* --- 0. NÚT ĐIỀU HƯỚNG --- */
+        #global-nav {
+            position: fixed; top: 20px; left: 20px; z-index: 1000;
+            display: flex; flex-direction: column; gap: 12px; 
+        }
+        .nav-btn {
+            padding: 10px 18px; background: white; color: #00796b;
+            text-decoration: none; font-weight: bold; border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.3s; font-size: 0.9rem;
+        }
+        .nav-btn:hover { background: #00796b; color: white; transform: translateX(5px); }
+        .nav-btn.active { background: #00796b; color: white; } /* Thêm hiệu ứng cho nút đang chọn */
+
+        /* --- 1. THANH TIẾN ĐỘ --- */
+        #progress-container {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 280px; background: white; padding: 10px;
+            border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100; text-align: center;
+        }
+        #progress-bar-bg { width: 100%; height: 8px; background: #e0e0e0; border-radius: 5px; margin-top: 5px; overflow: hidden; }
+        #progress-bar-fill { width: 0%; height: 100%; background: #4db6ac; transition: 0.5s; }
+
+        /* --- 2. THANH LỌC (SIDEBAR) --- */
+        #filter-sidebar {
+            position: fixed; left: 20px; top: 260px; /* Đẩy xuống một chút để nhường chỗ cho thanh menu dài hơn */
+            width: 200px;
+            background: white; padding: 15px; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100;
+        }
+        .filter-btn {
+            width: 100%; padding: 8px; margin-bottom: 5px; border: none;
+            background: #f5f5f5; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.3s;
+        }
+        .filter-btn.active { background: #4db6ac; color: white; }
+
+        /* --- 3. TRIỂN LÃM ẢNH --- */
+        #photo-exhibition {
+            position: fixed; right: 20px; bottom: 20px; width: 220px;
+            background: white; padding: 10px; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100;
+        }
+        #slideshow-img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; transition: opacity 0.5s; }
+
+        /* --- 4. BẢN ĐỒ CHÍNH --- */
+        #map-container { 
+            width: 100vw; height: 100vh; 
+            display: flex; justify-content: center; align-items: center; 
+            padding: 20px;
+        }
+        #map-wrapper { position: relative; display: inline-block; }
+        #main-map { 
+            display: block; max-width: 100%; max-height: 85vh; 
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+        }
+        #pins-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+        /* NÚT GHIM (PIN) */
+        .pin {
+            position: absolute; width: 24px; height: 24px;
+            background: #d32f2f; border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg); cursor: pointer; z-index: 50;
+            animation: pulse 1.5s infinite; margin-top: -12px; margin-left: -12px;
+            pointer-events: auto;
+        }
+        .pin.visited { background: #4caf50; animation: none; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+        }
+
+        /* --- POPUP --- */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        #modal-content { background: white; width: 90%; max-width: 500px; border-radius: 20px; overflow: hidden; position: relative; }
+        #modal-image { width: 100%; height: 200px; object-fit: cover; }
+        #modal-info { padding: 20px; }
+        .close-btn { position: absolute; top: 10px; right: 10px; background: #000; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+
+        /* CHATBOT WIDGET */
+        #chat-widget-btn {
+            position: fixed; bottom: 180px; right: 30px;
+            width: 55px; height: 55px; background: #00796b;
+            color: white; border-radius: 50%; display: flex;
+            justify-content: center; align-items: center; font-size: 24px;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1500;
+        }
+        #chat-popup {
+            position: fixed; bottom: 250px; right: 30px;
+            width: 320px; height: 400px; background: white;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1500; display: none; flex-direction: column; overflow: hidden;
+            border: 2px solid #4db6ac;
+        }
+
+        /* --- TỐI ƯU MOBILE --- */
+        @media (max-width: 768px) {
+            #filter-sidebar, #photo-exhibition { display: none; }
+            #global-nav { flex-direction: row; top: auto; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; justify-content: flex-start; overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
+            .nav-btn { flex: 0 0 auto; }
+            #progress-container { width: 220px; top: 10px; }
+            #map-container { padding: 0; overflow: auto; display: block; -webkit-overflow-scrolling: touch; }
+            #map-wrapper { width: 1100px; } 
+            .pin { width: 32px; height: 32px; }
+            #chat-widget-btn { bottom: 80px; right: 20px; }
+            #chat-popup { width: 90%; right: 5%; bottom: 150px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="global-nav">
+        <a href="home.html" class="nav-btn">🏠 Trang Chủ</a>
+        <a href="ban-do.html" class="nav-btn active">📍 Bản Đồ</a>
+        <a href="video.html" class="nav-btn">🎬 Rạp Phim Miệt Vườn</a>
+        <a href="chatbot.html" class="nav-btn">💬 Trò Chuyện AI</a>
+        <a href="ho-chieu.html" class="nav-btn">🏆 Thử Tài Hộ Chiếu Số</a>
+    </div>
+
+    <div id="progress-container">
+        <div id="progress-text" style="color: #00796b; font-weight: bold; font-size: 0.8rem;">Khám phá di sản: <span id="visited-count">0</span>/38</div>
+        <div id="progress-bar-bg"><div id="progress-bar-fill"></div></div>
+    </div>
+
+    <div id="filter-sidebar">
+        <div style="font-weight: bold; margin-bottom: 10px; color: #333; font-size: 0.9rem;">DANH MỤC</div>
+        <button class="filter-btn active" onclick="filterMap('all')">📍 Tất cả</button>
+        <button class="filter-btn" onclick="filterMap('lich-su')">🏛 Lịch sử</button>
+        <button class="filter-btn" onclick="filterMap('sinh-thai')">🌳 Sinh thái</button>
+        <button class="filter-btn" onclick="filterMap('ton-giao')">⛩ Tôn giáo</button>
+        <button class="filter-btn" onclick="filterMap('check-in')">📸 Check-in</button>
+    </div>
+
+    <div id="photo-exhibition">
+        <img id="slideshow-img" src="images/locations/photo1.jpg" alt="Gallery">
+        <div id="photo-title" style="font-size: 0.7rem; text-align: center; margin-top: 5px; color: #666;">Cảnh đẹp quê hương</div>
+    </div>
+
+    <div id="map-container">
+        <div id="map-wrapper">
+            <img id="main-map" src="images/map/ban-do-vinh-long.jpg" alt="Map">
+            <div id="pins-area"></div>
+        </div>
+    </div>
+
+    <div id="modal-overlay">
+        <div id="modal-content">
+            <button class="close-btn" onclick="closeModal()">✖</button>
+            <img id="modal-image" src="">
+            <div id="modal-info">
+                <h2 id="modal-title" style="color: #00796b;"></h2>
+                <p id="modal-desc" style="margin-top:10px; line-height:1.5; color:#444; font-size: 0.9rem; text-align: justify;"></p>
+                <div style="margin-top: 20px; text-align: center;">
+                    <a id="view-video-btn" href="#" style="background: #f06292; color: white; display: none; padding: 10px 20px; text-decoration: none; border-radius: 50px; font-weight: bold; transition: 0.3s; font-size: 0.9rem;">🎬 Xem Video Giới Thiệu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-widget-btn" onclick="toggleChat()">💬</div>
+    <div id="chat-popup">
+        <div style="background: #00796b; color: white; padding: 8px 15px; display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9rem;">
+            <span>Đại sứ AI</span>
+            <span style="cursor:pointer" onclick="toggleChat()">✖</span>
+        </div>
+        <iframe src="https://www.chatbase.co/chatbot-iframe/TSSrGXhyfc1V4J2fYxrGJ" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+
+    <audio id="audio-player"></audio>
+
+    <script>
+        const locations = [
+            { id: 1, type: 'sinh-thai', name: "Ao Bà Ôm", top: "51.2%", left: "53.9%", img: "images/locations/ao-ba-om.jpg", audio: "audio/voice/ao-ba-om.mp3", videoId: "ao-ba-om", desc: "Danh thắng quốc gia với hàng cây cổ thụ có bộ rễ nổi kỳ thú; không gian tuyệt vời để kể chuyện dân gian Khmer." },
+            { id: 2, type: 'lich-su', name: "Bảo tàng Khmer", top: "51.8%", left: "55.0%", img: "images/locations/bao-tang-khmer.jpg", audio: "audio/voice/bao-tang-khmer.mp3", videoId: "bao-tang-khmer", desc: "Nơi lưu giữ kho tàng hiện vật quý giá về đời sống và tinh thần của người Khmer Nam Bộ." },
+            { id: 3, type: 'lich-su', name: "Bảo tàng Vĩnh Long", top: "14.2%", left: "23.4%", img: "images/locations/bao-tang-vinh-long.jpg", audio: "audio/voice/bao-tang-vinh-long.mp3", videoId: "bao-tang-vinh-long", desc: "Lưu giữ những mảnh ghép lịch sử của vùng đất Long Hồ dinh xưa, điểm đến giáo dục truyền thống." },
+            { id: 4, type: 'sinh-thai', name: "Biển Ba Động", top: "89.9%", left: "72.0%", img: "images/locations/bien-ba-dong.jpg", audio: "audio/voice/bien-ba-dong.mp3", videoId: "bien-ba-dong", desc: "Bãi biển hoang sơ với những hàng phi lao rì rào, điểm nghỉ dưỡng lý tưởng." },
+            { id: 5, type: 'sinh-thai', name: "Biển Cồn Bửng", top: "58.4%", left: "84.0%", img: "images/locations/bien-con-bung.jpg", audio: "audio/voice/bien-con-bung.mp3", videoId: "bien-con-bung", desc: "Nổi tiếng với con đường mòn trên biển và di tích về đoàn tàu không số anh hùng." },
+            { id: 6, type: 'check-in', name: "Cầu Mỹ Thuận 1", top: "14.0%", left: "21.0%", img: "images/locations/cau-my-thuan.jpg", audio: "audio/voice/cau-my-thuan1.mp3", videoId: "cau-my-thuan-1", desc: "Cây cầu dây văng đầu tiên của Việt Nam, biểu tượng của sự kết nối và tình hữu nghị." },
+            { id: 7, type: 'check-in', name: "Cầu Mỹ Thuận 2", top: "13.3%", left: "20.0%", img: "images/locations/cau-my-thuan-2.jpg", audio: "audio/voice/cau-my-thuan2.mp3", videoId: "cau-my-thuan-2", desc: "Công trình hiện đại do chính người Việt thiết kế, minh chứng cho trí tuệ và sự vươn mình của dân tộc." },
+            { id: 8, type: 'check-in', name: "Cầu Rạch Miễu", top: "6.3%", left: "56.3%", img: "images/locations/cau-rach-mieu.jpg", audio: "audio/voice/cau-rach-mieu.mp3", videoId: "cau-rach-mieu", desc: "Cánh cửa nối liền Tiền Giang và Bến Tre, nơi ngắm trọn vẻ đẹp sông Tiền thơ mộng." },
+            { id: 9, type: 'check-in', name: "Chợ Nổi Trà Ôn", top: "49.5%", left: "25.3%", img: "images/locations/cho-noi-tra-on.jpg", audio: "audio/voice/cho-noi-tra-on.mp3", videoId: "cho-noi-tra-on", desc: "Nét văn hóa sông nước đặc trưng trên dòng sông Hậu với nhịp sống giao thương nhộn nhịp." },
+            { id: 10, type: 'ton-giao', name: "Chùa Ang - Trà Vinh", top: "49.3%", left: "54.3%", img: "images/locations/chua-ang.jpg", audio: "audio/voice/chua-ang.mp3", videoId: "chua-ang", desc: "Ngôi chùa Khmer cổ nhất vùng với kiến trúc điêu khắc tinh xảo bên Ao Bà Ôm." },
+            { id: 11, type: 'ton-giao', name: "Chùa Cò - Trà Vinh", top: "49.6%", left: "54.3%", img: "images/locations/chua-co.jpg", audio: "audio/voice/chua-co.mp3", videoId: "chua-co", desc: "Kiến trúc rực rỡ và là nơi trú ngụ của hàng ngàn cánh cò, tạo nên bức tranh thiên nhiên hài hòa." },
+            { id: 12, type: 'ton-giao', name: "Chùa Hang - Trà Vinh", top: "51.5%", left: "54.3%", img: "images/locations/chua-hang.jpg", audio: "audio/voice/chua-hang.mp3", videoId: "chua-hang", desc: "Độc đáo với cổng chào hình hang động và xưởng điêu khắc nghệ thuật ngay trong chùa." },
+            { id: 13, type: 'ton-giao', name: "Chùa Ông Thất Phủ Miếu", top: "14.9%", left: "28.2%", img: "images/locations/chua-ong-vinh-long.jpg", audio: "audio/voice/chua-ong-that-phu-mieu.mp3", videoId: "chua-ong", desc: "Mang đậm kiến trúc Phúc Kiến, minh chứng cho sự giao thoa văn hóa Việt - Hoa đặc sắc." },
+            { id: 14, type: 'ton-giao', name: "Chùa Phật Ngọc Xá Lợi", top: "14.8%", left: "20.3%", img: "images/locations/chua-phat-ngoc-xa-loi-vinh-long.jpg", audio: "audio/voice/chua-phat-ngoc-xa-loi.mp3", videoId: "chua-phat-ngoc", desc: "Trung tâm Phật giáo lớn nhất vùng với bảo tháp cao vút và không gian tâm linh yên bình." },
+            { id: 15, type: 'ton-giao', name: "Chùa Tiên Châu", top: "10.8%", left: "26.6%", img: "images/locations/chua-tien-chau-vinh-long.jpg", audio: "audio/voice/chua-tien-chau.mp3", videoId: "chua-tien-chau", desc: "Di tích quốc gia trên cù lao An Bình với bộ khung gỗ quý và chạm trổ công phu." },
+            { id: 16, type: 'ton-giao', name: "Chùa Vàm Ray", top: "82.1%", left: "48.3%", img: "images/locations/chua-vam-ray.jpg", audio: "audio/voice/chua-vam-ray.mp3", videoId: "chua-vam-ray", desc: "Ngôi chùa Khmer dát vàng lộng lẫy nhất Việt Nam với kiến trúc Angkor hùng vĩ." },
+            { id: 17, type: 'sinh-thai', name: "Cồn Chim", top: "51.4%", left: "64.3%", img: "images/locations/con-chim.jpg", audio: "audio/voice/con-chim.mp3", videoId: "con-chim", desc: "Mô hình du lịch thuận thiên, trải nghiệm làm bánh và nếp sống nông thôn thuần khiết." },
+            { id: 18, type: 'sinh-thai', name: "Cù Lao An Bình", top: "12.4%", left: "25.8%", img: "images/locations/cu-lao-an-binh.jpg", audio: "audio/voice/cu-lao-an-binh.mp3", videoId: "cu-lao-an-binh", desc: "Lá phổi xanh giữa lòng sông Tiền với vườn trái cây trĩu quả quanh năm." },
+            { id: 19, type: 'sinh-thai', name: "Cù Lao Tân Quy", top: "54.6%", left: "25.7%", img: "images/locations/cu-lao-tan-quy.jpg", audio: "audio/voice/cu-lao-tan-quy.mp3", videoId: "cu-lao-tan-quy", desc: "Vùng đất nổi tiếng với măng cụt và chôm chôm, không gian sinh thái miệt vườn mát mẻ." },
+            { id: 20, type: 'lich-su', name: "Đền Thờ Bác Hồ", top: "44.7%", left: "54.3%", img: "images/locations/den-tho-bac-ho.jpg", audio: "audio/voice/den-tho-bac-ho.mp3", videoId: "den-tho-bac-ho", desc: "Công trình thiêng liêng thể hiện tấm lòng kính yêu của nhân dân trong bom đạn kháng chiến." },
+            { id: 21, type: 'lich-su', name: "Đền Thờ Nguyễn Đình Chiểu", top: "38.4%", left: "69.6%", img: "images/locations/den-tho-nguyen-dinh-chieu.jpg", audio: "audio/voice/den-tho-nguyen-dinh-chieu.mp3", videoId: "den-tho-nguyen-dinh-chieu", desc: "Tưởng nhớ nhà thơ yêu nước và thầy giáo mẫu mực, cội nguồn của đạo học." },
+            { id: 22, type: 'lich-su', name: "Đền Thờ Nguyễn Thị Định", top: "17.9%", left: "64.3%", img: "images/locations/den-tho-nguyen-thi-dinh.jpg", audio: "audio/voice/den-tho-nguyen-thi-dinh.mp3", videoId: "den-tho-nguyen-thi-dinh", desc: "Tôn vinh nữ tướng tài ba của Đội quân tóc dài, biểu tượng kiên cường của phụ nữ Việt." },
+            { id: 23, type: 'sinh-thai', name: "KDL Deja", top: "41.9%", left: "53.6%", img: "images/locations/kdl-deja.jpg", audio: "audio/voice/kdl-deja.mp3", videoId: "kdl-deja", desc: "Điểm dừng chân mới mẻ với không gian xanh và dịch vụ nghỉ dưỡng hiện đại." },
+            { id: 24, type: 'lich-su', name: "Nhà xưa Long Hồ", top: "23.0%", left: "27.9%", img: "images/locations/nha-xua-long-ho.jpg", audio: "audio/voice/kdl-nha-xua-long-ho.mp3", videoId: "nha-xua-long-ho", desc: "Tái hiện không gian sống Nam Bộ xưa với ngôi nhà gỗ quý và vườn tược yên bình." },
+            { id: 25, type: 'sinh-thai', name: "Rừng đước Trà Vinh", top: "89.5%", left: "70.4%", img: "images/locations/kdl-rung-duoc.jpg", audio: "audio/voice/kdl-sinh-thai-rung-duoc.mp3", videoId: "rung-duoc", desc: "Hệ sinh thái ngập mặn đa dạng, lớp học thiên nhiên sống động về bảo tồn tài nguyên." },
+            { id: 26, type: 'sinh-thai', name: "KDL Trường An", top: "14.5%", left: "20.9%", img: "images/locations/kdl-truong-an.jpg", audio: "audio/voice/kdl-truong-an.mp3", videoId: "kdl-truong-an", desc: "Khuôn viên rộng lớn bên bờ sông Tiền, nơi lý tưởng cho các hoạt động dã ngoại." },
+            { id: 27, type: 'sinh-thai', name: "KDL Vinh Sang", top: "12.6%", left: "25.4%", img: "images/locations/kdl-vinh-sang.jpg", audio: "audio/voice/kdl-vinh-sang.mp3", videoId: "kdl-vinh-sang", desc: "Trải nghiệm làm nông dân bắt cá, trượt cỏ và tìm hiểu thế giới động vật vui nhộn." },
+            { id: 28, type: 'lich-su', name: "Khu tưởng niệm Phạm Hùng", top: "21.4%", left: "26.8%", img: "images/locations/khu-tuong-niem-pham-hung.jpg", audio: "audio/voice/khu-tuong-niem-pham-hung.mp3", videoId: "khu-tuong-niem-pham-hung", desc: "Tri ân người con ưu tú của quê hương, tấm gương sáng về tinh thần học tập và cống hiến." },
+            { id: 29, type: 'lich-su', name: "Khu tưởng niệm Võ Văn Kiệt", top: "34.3%", left: "42.9%", img: "images/locations/khu-tuong-niem-vo-van-kiet.jpg", audio: "audio/voice/khu-tuong-niem-vo-van-kiet.mp3", videoId: "khu-tuong-niem-vo-van-kiet", desc: "Lưu giữ kỷ vật về Bác Sáu Dân – người lãnh đạo của đổi mới và lòng dân." },
+            { id: 30, type: 'check-in', name: "Làng mai Phước Định", top: "12.0%", left: "24.9%", img: "images/locations/lang-mai-vang-phuoc-dinh.jpg", audio: "audio/voice/lang-mai-vang-phuoc-dinh.mp3", videoId: "lang-mai", desc: "Làng nghề truyền thống nổi tiếng với những gốc mai cổ thụ rực rỡ mỗi độ xuân về." },
+            { id: 31, type: 'check-in', name: "Lò gạch Mang Thít", top: "16.3%", left: "31.9%", img: "images/locations/lo-gach-mang-thit.jpg", audio: "audio/voice/lo-gach-mang-thit.mp3", videoId: "lo-gach-mang-thit", desc: "Vương quốc đỏ với hàng ngàn tháp gạch ven sông, di sản công nghiệp độc nhất vô nhị." },
+            { id: 32, type: 'lich-su', name: "Nhà cổ Cai Cường", top: "13.0%", left: "26.6%", img: "images/locations/nha-co-cai-cuong.jpg", audio: "audio/voice/nha-co-cai-cuong.mp3", videoId: "nha-co-cai-cuong", desc: "Kết hợp kiến trúc Pháp và nội thất gỗ phương Đông, lưu giữ nét đẹp sinh hoạt điền chủ xưa." },
+            { id: 33, type: 'lich-su', name: "Nhà cổ Đại Điền", top: "41.7%", left: "63.9%", img: "images/locations/nha-co-dai-dien.jpg", audio: "audio/voice/nha-co-dai-dien.mp3", videoId: "nha-co-dai-dien", desc: "Ngôi nhà cổ đồ sộ xứ dừa với điêu khắc tỉ mỉ, minh chứng cho vùng đất giàu truyền thống." },
+            { id: 34, type: 'ton-giao', name: "Giáo xứ Mạc Bắc", top: "63.7%", left: "42.8%", img: "images/locations/thanh-duong-giao-xu-mac-bac.jpg", audio: "audio/voice/thanh-duong-giao-xu-mac-bac.mp3", videoId: "giao-xu-mac-bac", desc: "Nhà thờ Gothic cổ kính và lớn nhất miền Tây, điểm nhấn tôn giáo tại Trà Vinh." },
+            { id: 35, type: 'ton-giao', name: "Thiền viện Trà Vinh", top: "85.2%", left: "68.8%", img: "images/locations/thien-vien-truc-lam-tra-vinh.jpg", audio: "audio/voice/thien-vien-truc-lam-tra-vinh.mp3", videoId: "thien-vien", desc: "Thiền viện hướng biển Đông, mang lại cảm giác bình yên giữa sóng vỗ và chuông chùa." },
+            { id: 36, type: 'lich-su', name: "Văn Thánh Miếu", top: "17.7%", left: "24.9%", img: "images/locations/van-thanh-mieu-vinh-long.jpg", audio: "audio/voice/van-thanh-mieu.mp3", videoId: "van-thanh-mieu", desc: "Quốc Tử Giám phương Nam, tôn vinh đạo học và hiếu học của dân tộc." },
+            { id: 37, type: 'lich-su', name: "Tiểu đoàn 307", top: "41.4%", left: "64.8%", img: "images/locations/tieu-doan-307.jpg", audio: "audio/voice/tieu-doan-307.mp3", videoId: "tieu-doan-307", desc: "Ghi dấu lịch sử đơn vị quân đội anh hùng, ôn lại truyền thống quả cảm của cha ông." },
+            { id: 38, type: 'ton-giao', name: "Chùa Phước Hậu", top: "17.4%", left: "24.6%", img: "images/locations/chua-phuoc-hau.jpg", audio: "audio/voice/chua-phuoc-hau.mp3", videoId: "chua-phuoc-hau", desc: "Sở hữu Vườn Kinh đá độc đáo, sự kết hợp tuyệt vời giữa tâm linh và nghệ thuật đá." }
+        ];
+
+        let visitedList = new Set();
+
+        function renderPins(filterType = 'all') {
+            const pinsArea = document.getElementById('pins-area');
+            pinsArea.innerHTML = ''; 
+            locations.forEach(loc => {
+                if (filterType === 'all' || loc.type === filterType) {
+                    const pin = document.createElement('div');
+                    pin.className = `pin ${visitedList.has(loc.id) ? 'visited' : ''}`;
+                    pin.style.top = loc.top;
+                    pin.style.left = loc.left;
+                    pin.title = loc.name;
+                    pin.onclick = () => openModal(loc);
+                    pinsArea.appendChild(pin);
+                }
+            });
+        }
+
+        function filterMap(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderPins(type);
+        }
+
+        function openModal(loc) {
+            document.getElementById('modal-title').innerText = loc.name;
+            document.getElementById('modal-desc').innerText = loc.desc;
+            document.getElementById('modal-image').src = loc.img;
+            document.getElementById('modal-overlay').style.display = 'flex';
+            
+            // Xử lý nút xem video
+            const videoBtn = document.getElementById('view-video-btn');
+            if (loc.videoId) {
+                videoBtn.href = `video.html#${loc.videoId}`;
+                videoBtn.style.display = 'inline-block';
+            } else {
+                videoBtn.style.display = 'none';
+            }
+
+            const player = document.getElementById('audio-player');
+            player.src = loc.audio;
+            player.play().catch(e => console.log("Audio play blocked"));
+
+            if (!visitedList.has(loc.id)) {
+                visitedList.add(loc.id);
+                updateProgress();
+                renderPins(document.querySelector('.filter-btn.active').innerText.toLowerCase().includes('tất cả') ? 'all' : loc.type); 
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+            document.getElementById('audio-player').pause();
+            document.getElementById('audio-player').currentTime = 0;
+        }
+
+        function updateProgress() {
+            const count = visitedList.size;
+            document.getElementById('visited-count').innerText = count;
+            const percent = (count / 38) * 100;
+            document.getElementById('progress-bar-fill').style.width = percent + '%';
+        }
+
+        function toggleChat() {
+            const chatPopup = document.getElementById('chat-popup');
+            chatPopup.style.display = (chatPopup.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        const galleryImages = [
+            { src: "images/locations/photo1.jpg", title: "Bình minh trên dòng Cổ Chiên" },
+            { src: "images/locations/photo2.jpg", title: "Cầu Mỹ Thuận lung linh" }
+        ];
+        let currentImg = 0;
+        function startSlideshow() {
+            setInterval(() => {
+                currentImg = (currentImg + 1) % galleryImages.length;
+                const imgTag = document.getElementById('slideshow-img');
+                imgTag.src = galleryImages[currentImg].src;
+                document.getElementById('photo-title').innerText = galleryImages[currentImg].title;
+            }, 5000);
+        }
+
+        window.onload = () => {
+            renderPins();
+            startSlideshow();
+        };
+    </script>
+</body>
+</html>

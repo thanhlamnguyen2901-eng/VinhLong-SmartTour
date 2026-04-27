@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thử Tài Nhận Hộ Chiếu - Vĩnh Long Smart Tour</title>
+    <style>
+        /* --- CSS CƠ BẢN --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2dfdb 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- THANH ĐIỀU HƯỚNG ĐỒNG BỘ --- */
+        #global-nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            background: white; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000; gap: 10px;
+            overflow-x: auto; padding: 0 15px; white-space: nowrap;
+        }
+        .nav-btn {
+            padding: 10px 18px; background: #e0f2f1; color: #00796b;
+            text-decoration: none; border-radius: 50px; font-weight: bold;
+            transition: 0.3s; font-size: 0.9rem; flex-shrink: 0;
+        }
+        .nav-btn:hover, .nav-btn.active { background: #00796b; color: white; }
+
+        /* --- CONTAINER CHÍNH --- */
+        .quiz-container {
+            background: white;
+            width: 90%;
+            max-width: 700px;
+            margin-top: 100px; /* Đẩy xuống để không bị menu đè lên */
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            z-index: 10;
+            margin-bottom: 40px;
+        }
+
+        .quiz-header h1 { color: #00796b; margin-bottom: 10px; text-transform: uppercase; }
+        .quiz-header p { color: #555; margin-bottom: 20px; font-size: 1.1rem; }
+
+        /* --- KHU VỰC CÂU HỎI --- */
+        #question-box { display: block; }
+        .question-text { font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 25px; min-height: 60px; line-height: 1.5; }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .option-btn {
+            padding: 15px;
+            background: #f0f4f8;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+            color: #444;
+        }
+        .option-btn:hover { background: #e0f2f1; border-color: #4db6ac; }
+        .option-btn.correct { background: #4caf50 !important; color: white !important; border-color: #388e3c !important; }
+        .option-btn.wrong { background: #f44336 !important; color: white !important; border-color: #d32f2f !important; }
+
+        /* --- KHU VỰC THÔNG BÁO KẾT QUẢ --- */
+        #name-entry-box, #fail-box { display: none; margin-top: 20px; }
+        
+        /* Box thành công */
+        #student-name {
+            width: 80%; padding: 12px; font-size: 1.1rem;
+            border: 2px solid #4db6ac; border-radius: 10px;
+            margin-bottom: 20px; outline: none; text-align: center;
+        }
+        
+        /* Box thất bại */
+        .fail-text { color: #d32f2f; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
+
+        .action-btn {
+            padding: 12px 30px; background: #00796b; color: white;
+            border: none; border-radius: 50px; font-size: 1.1rem;
+            font-weight: bold; cursor: pointer; transition: 0.3s; margin: 5px;
+        }
+        .action-btn:hover { background: #004d40; transform: scale(1.05); }
+        .retry-btn { background: #ff9800; color: #fff; }
+        .retry-btn:hover { background: #f57c00; }
+
+        /* --- HỘ CHIẾU SỐ (KẾT QUẢ) --- */
+        #passport-box { display: none; margin-top: 20px; }
+        .passport-card {
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+            color: #ffd700;
+            padding: 30px;
+            border-radius: 15px;
+            border: 5px solid #ffd700;
+            position: relative;
+            text-align: left;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        .passport-card h2 { text-align: center; border-bottom: 2px dashed #ffd700; padding-bottom: 10px; margin-bottom: 20px; font-family: 'Times New Roman', serif; text-transform: uppercase; }
+        .passport-details { font-size: 1.2rem; line-height: 1.8; color: white; }
+        .passport-details span { color: #ffd700; font-weight: bold; font-size: 1.4rem; }
+        
+        .stamp {
+            position: absolute;
+            bottom: 20px; right: 20px;
+            width: 100px; height: 100px;
+            border: 4px solid #f44336;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; text-align: center;
+            color: #f44336; font-weight: bold; font-size: 0.9rem;
+            transform: rotate(-15deg);
+            opacity: 0.8;
+            font-family: Courier, serif;
+        }
+
+        #score-display { 
+            font-size: 1.2rem; font-weight: bold; color: #00796b; 
+            margin-bottom: 15px; background: #e0f2f1; padding: 10px; border-radius: 10px; display: inline-block;
+        }
+
+        /* Tối ưu điện thoại */
+        @media (max-width: 768px) {
+            #global-nav { justify-content: flex-start; }
+            .options-grid { grid-template-columns: 1fr; } 
+            .quiz-container { margin-top: 90px; padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="global-nav">
+        <a href="index.html" class="nav-btn">🏠 Trang Chủ</a>
+        <a href="ban-do.html" class="nav-btn">📍 Bản Đồ</a>
+        <a href="video.html" class="nav-btn">🎬 Rạp Phim</a>
+        <a href="chatbot.html" class="nav-btn">💬 Chat AI</a>
+        <a href="ho-chieu.html" class="nav-btn active">🏆 Hộ Chiếu</a>
+        <a href="cam-nhan.html" class="nav-btn">✍️ Cảm Nhận</a>
+    </div>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>THỬ TÀI KIẾN THỨC</h1>
+            <p>Vượt qua ít nhất <strong>8/10</strong> câu hỏi để nhận Hộ chiếu Du lịch Số!</p>
+            <div id="score-display">Câu hỏi: <span id="current-q">1</span>/10 | Điểm: <span id="score">0</span></div>
+        </div>
+
+        <div id="question-box">
+            <div class="question-text" id="question-text">Đang tải câu hỏi...</div>
+            <div class="options-grid" id="options-grid"></div>
+        </div>
+
+        <div id="name-entry-box">
+            <h2 style="color: #4caf50; margin-bottom: 15px;">🎉 Xuất sắc! Bạn đã vượt qua thử thách! 🎉</h2>
+            <p style="margin-bottom: 15px; color: #666;">Số điểm của bạn: <strong id="win-score"></strong>/100. Hãy nhập tên để hệ thống cấp Hộ chiếu số nhé:</p>
+            <input type="text" id="student-name" placeholder="Ví dụ: Nguyễn Văn A (Lớp 6/2)" autocomplete="off">
+            <br>
+            <button class="action-btn" onclick="generatePassport()">CẤP HỘ CHIẾU</button>
+        </div>
+
+        <div id="fail-box">
+            <h2 class="fail-text">Rất tiếc! Thử thách chưa thành công 😢</h2>
+            <p style="margin-bottom: 20px; color: #555; font-size: 1.1rem;">Bạn chỉ trả lời đúng <strong id="fail-score"></strong>/10 câu hỏi (Cần đúng 8 câu để nhận Hộ chiếu).</p>
+            <p style="margin-bottom: 25px; color: #777;">Hãy ôn lại kiến thức trên Bản đồ du lịch và thử sức lại nhé!</p>
+            <button class="action-btn retry-btn" onclick="location.reload()">🔄 THỬ SỨC LẠI</button>
+        </div>
+
+        <div id="passport-box">
+            <div class="passport-card">
+                <h2>HỘ CHIẾU DU LỊCH SỐ</h2>
+                <div class="passport-details">
+                    Đại sứ Nhí: <span id="pass-name">...</span><br>
+                    Thành tích: <span id="pass-score" style="font-size:1.2rem;"></span>/100 Điểm<br>
+                    Cấp bởi: Dự án Vĩnh Long Smart Tour<br>
+                    Năm học: 2025 - 2026
+                </div>
+                <div class="stamp">CHỨNG NHẬN<br>ĐẠI SỨ</div>
+            </div>
+            <p style="color: #666; margin-bottom: 20px;">Hãy chụp màn hình Hộ chiếu này lại để khoe với thầy cô và bạn bè nhé!</p>
+            <button class="action-btn" onclick="location.reload()">Chơi lại từ đầu</button>
+        </div>
+    </div>
+
+    <script>
+        // NGÂN HÀNG 50 CÂU HỎI VỀ 38 ĐỊA DANH
+        const questionBank = [
+            { q: "Ao Bà Om nằm ở địa phương nào trước khi sáp nhập tỉnh Vĩnh Long mới?", opts: ["Trà Vinh", "Vĩnh Long", "Bến Tre", "Cần Thơ"], ans: "Trà Vinh" },
+            { q: "Ao Bà Om còn có tên gọi dân dã nào khác?", opts: ["Ao Tròn", "Ao Vuông", "Ao Dài", "Ao Tam Giác"], ans: "Ao Vuông" },
+            { q: "Bảo tàng Văn hóa Dân tộc Khmer Nam Bộ nằm cạnh địa danh nào?", opts: ["Chùa Hang", "Biển Ba Động", "Ao Bà Om", "Thiền viện Trúc Lâm"], ans: "Ao Bà Om" },
+            { q: "Bảo tàng Vĩnh Long trước đây từng là công trình gì?", opts: ["Trường học Pháp", "Dinh Tỉnh trưởng", "Bệnh viện", "Nhà hát"], ans: "Dinh Tỉnh trưởng" },
+            { q: "Khu trưng bày nổi tiếng nhất tại Bảo tàng Vĩnh Long là về nghề gì?", opts: ["Nghề đan lát", "Nghề làm mắm", "Gốm đỏ Mang Thít", "Nghề dệt chiếu"], ans: "Gốm đỏ Mang Thít" },
+            { q: "Biển Ba Động thuộc huyện nào của Trà Vinh cũ trước đây?", opts: ["Trà Cú", "Duyên Hải", "Cầu Ngang", "Châu Thành"], ans: "Duyên Hải" },
+            { q: "Món hải sản đặc trưng có tên gọi độc đáo ở Biển Ba Động là gì?", opts: ["Con Vọp", "Con Chù ụ", "Con Cà ra", "Con Dộp"], ans: "Con Chù ụ" },
+            { q: "Biển Cồn Bửng nằm ở huyện nào của Bến Tre trước đây?", opts: ["Bình Đại", "Ba Tri", "Thạnh Phú", "Mỏ Cày Nam"], ans: "Thạnh Phú" },
+            { q: "Biển Cồn Bửng nổi tiếng gắn liền với di tích lịch sử nào?", opts: ["Đường mòn Hồ Chí Minh trên biển", "Bến Nhà Rồng", "Nhà tù Côn Đảo", "Căn cứ Trung ương Cục"], ans: "Đường mòn Hồ Chí Minh trên biển" },
+            { q: "Cầu Mỹ Thuận bắc qua dòng sông nào?", opts: ["Sông Tiền", "Sông Hậu", "Sông Cổ Chiên", "Sông Hàm Luông"], ans: "Sông Tiền" },
+            { q: "Cầu Mỹ Thuận 1 là công trình hợp tác giữa Việt Nam và quốc gia nào?", opts: ["Nhật Bản", "Hàn Quốc", "Úc", "Pháp"], ans: "Úc" },
+            { q: "Điểm đặc biệt nhất của Cầu Mỹ Thuận 2 khánh thành năm 2023 là gì?", opts: ["Dài nhất Đông Nam Á", "100% kỹ sư Việt Nam thiết kế thi công", "Có đường sắt đi qua", "Cầu phao nổi"], ans: "100% kỹ sư Việt Nam thiết kế thi công" },
+            { q: "Cầu Rạch Miễu nối liền hai tỉnh cũ nào trước đây?", opts: ["Tiền Giang - Bến Tre", "Vĩnh Long - Cần Thơ", "Trà Vinh - Sóc Trăng", "Bến Tre - Trà Vinh"], ans: "Tiền Giang - Bến Tre" },
+            { q: "Đặc điểm kiến trúc nổi bật của Cầu Rạch Miễu là gì?", opts: ["Dây văng hình chữ V ngược", "Hình cánh cung", "Hình chữ A", "Cầu quay"], ans: "Dây văng hình chữ V ngược" },
+            { q: "Chợ nổi Trà Ôn nằm ở ngã ba của hai dòng sông nào?", opts: ["Sông Tiền và sông Hậu", "Sông Mang Thít và sông Hậu", "Sông Cổ Chiên và sông Tiền", "Sông Hàm Luông và sông Hậu"], ans: "Sông Mang Thít và sông Hậu" },
+            { q: "Ở chợ nổi miền Tây, cây sào tre dùng để treo sản phẩm báo hiệu cho người mua gọi là gì?", opts: ["Cây nêu", "Cây bẹo", "Cây chào", "Cây sào"], ans: "Cây bẹo" },
+            { q: "Đặc sản ẩm thực nổi tiếng hay bán trên ghe ở Chợ nổi Trà Ôn là món gì?", opts: ["Hủ tiếu Nam Vang", "Bún bò viên", "Phở bò", "Bánh canh ghẹ"], ans: "Bún bò viên" },
+            { q: "Món ăn đặc sản lừng danh ở khu phố ẩm thực Chợ Trà Vinh là gì?", opts: ["Bún mắm", "Bún nước lèo", "Bún cá", "Bún riêu"], ans: "Bún nước lèo" },
+            { q: "Chùa Âng ở Trà Vinh là ngôi chùa thuộc hệ phái Phật giáo nào?", opts: ["Bắc tông", "Nam tông Khmer", "Khất sĩ", "Thiền tông"], ans: "Nam tông Khmer" },
+            { q: "Chùa Cò ở Trà Cú có tên gọi chính thức bằng tiếng Khmer là gì?", opts: ["Kompong Chray", "Angkorajaborey", "Nodol", "Vàm Rây"], ans: "Nodol" },
+            { q: "Tại sao Chùa Kompong Chray lại có biệt danh là Chùa Hang?", opts: ["Vì nằm trong hang núi", "Vì cổng chùa xây dày và sâu như cái hang", "Vì có hang động nhân tạo", "Vì đào dưới lòng đất"], ans: "Vì cổng chùa xây dày và sâu như cái hang" },
+            { q: "Chùa Ông Thất Phủ Miếu ở Vĩnh Long được xây dựng bởi cộng đồng người nào?", opts: ["Người Kinh", "Người Khmer", "Người Hoa", "Người Chăm"], ans: "Người Hoa" },
+            { q: "Đặc trưng tâm linh thường thấy treo lơ lửng trên trần ở Chùa Ông Vĩnh Long là gì?", opts: ["Lồng đèn đỏ", "Khoanh nhang vòng (nhang đại)", "Chuông gió", "Bùa bình an"], ans: "Khoanh nhang vòng (nhang đại)" },
+            { q: "Chùa Phật Ngọc Xá Lợi Vĩnh Long nằm ngay cạnh công trình nổi tiếng nào?", opts: ["Cầu Cần Thơ", "Cầu Mỹ Thuận", "Phà Đình Khao", "Chợ Vĩnh Long"], ans: "Cầu Mỹ Thuận" },
+            { q: "Điểm nhấn kiến trúc lớn nhất tại Chùa Phật Ngọc Xá Lợi Vĩnh Long là gì?", opts: ["Tượng Phật nằm", "Bảo tháp Xá Lợi cao 45 mét", "Vườn kinh đá", "Cổng hang"], ans: "Bảo tháp Xá Lợi cao 45 mét" },
+            { q: "Chùa Phước Hậu (Tam Bình trước đây) nổi tiếng với công trình độc nhất vô nhị nào?", opts: ["Tượng Phật bằng đồng", "Vườn kinh bằng đá", "Tháp chuông Roman", "Mái ngói âm dương"], ans: "Vườn kinh bằng đá" },
+            { q: "Chùa Tiên Châu nằm ở địa danh nào của tỉnh Vĩnh Long?", opts: ["Cù lao An Bình", "Thị trấn Vũng Liêm", "Cù lao Tân Quy", "Cù lao Mây"], ans: "Cù lao An Bình" },
+            { q: "Ngôi chùa Khmer lớn nhất Việt Nam với tượng Phật nằm dài 54m tên là gì?", opts: ["Chùa Âng", "Chùa Hang", "Chùa Cò", "Chùa Vàm Rây"], ans: "Chùa Vàm Rây" },
+            { q: "Ốc đảo Cồn Chim ở Trà Vinh (cũ) phát triển du lịch theo triết lý nào?", opts: ["Hiện đại hóa", "Thuận thiên", "Công nghiệp hóa", "Khu vui chơi cảm giác mạnh"], ans: "Thuận thiên" },
+            { q: "Cù lao An Bình nằm giữa hai dòng sông nào?", opts: ["Sông Tiền và sông Cổ Chiên", "Sông Hậu và sông Mang Thít", "Sông Hàm Luông và sông Tiền", "Sông Cổ Chiên và sông Hậu"], ans: "Sông Tiền và sông Cổ Chiên" },
+            { q: "Cù lao Mây (Trà Ôn trước đây) rất nổi tiếng với làng nghề truyền thống nào?", opts: ["Làm gốm đỏ", "Làm kẹo dừa", "Làm bánh tráng nem", "Làm nước mắm"], ans: "Làm bánh tráng nem" },
+            { q: "Cù lao Tân Quy được mệnh danh là 'Vương quốc' của loại trái cây nào?", opts: ["Sầu riêng", "Chôm chôm", "Măng cụt", "Bưởi da xanh"], ans: "Măng cụt" },
+            { q: "Đền thờ Bác Hồ tại xã Long Đức, Trà Vinh trước đây được khánh thành vào năm nào giữa lúc bom đạn?", opts: ["1969", "1970", "1975", "1968"], ans: "1970" },
+            { q: "Bên trong khuôn viên Đền thờ Bác Hồ ở Trà Vinh (cũ) có phục dựng công trình nào của thủ đô?", opts: ["Lăng Bác", "Nhà sàn Bác Hồ", "Chùa Một Cột", "Cột cờ Hà Nội"], ans: "Nhà sàn Bác Hồ" },
+            { q: "Lăng mộ và đền thờ danh nhân Nguyễn Đình Chiểu tọa lạc tại huyện nào của tỉnh Bến Tre trước đây?", opts: ["Mỏ Cày Nam", "Ba Tri", "Giồng Trôm", "Bình Đại"], ans: "Ba Tri" },
+            { q: "Khu lưu niệm Nữ tướng Nguyễn Thị Định nằm ở xã nào của Bến Tre (cũ)?", opts: ["Lương Hòa (Giồng Trôm)", "An Đức (Ba Tri)", "Đại Điền (Thạnh Phú)", "Châu Thành"], ans: "Lương Hòa (Giồng Trôm)" },
+            { q: "Nữ tướng Nguyễn Thị Định là người khai sinh ra đội quân huyền thoại nào?", opts: ["Đội quân du kích", "Đội quân tóc dài", "Đội quân áo bà ba", "Đội quân khăn rằn"], ans: "Đội quân tóc dài" },
+            { q: "Ngôi nhà gỗ hơn trăm tuổi làm bối cảnh phim 'Người đẹp Tây Đô' tên là gì?", opts: ["Nhà cổ Cai Cường", "Nhà cổ Đại Điền", "Nhà Xưa Long Hồ (Ông Hai Hiếu)", "Nhà cổ Bình Thủy"], ans: "Nhà Xưa Long Hồ (Ông Hai Hiếu)" },
+            { q: "Khu du lịch sinh thái Rừng Đước thuộc huyện nào của Trà Vinh?", opts: ["Trà Cú", "Tiểu Cần", "Duyên Hải", "Cầu Kè"], ans: "Duyên Hải" },
+            { q: "Hoạt động trải nghiệm vui nhộn nào nổi tiếng tại Khu du lịch Vinh Sang (Vĩnh Long)?", opts: ["Tát mương bắt cá, cưỡi đà điểu", "Nhảy dù, lướt ván", "Lặn biển ngắm san hô", "Leo núi nhân tạo"], ans: "Tát mương bắt cá, cưỡi đà điểu" },
+            { q: "Khu du lịch sinh thái hiện đại Déjà Vu Huỳnh Kha nằm ở tỉnh cũ nào trước khi sáp nhập?", opts: ["Bến Tre", "Vĩnh Long", "Trà Vinh", "Tiền Giang"], ans: "Trà Vinh" },
+            { q: "Khu du lịch Trường An ở Vĩnh Long là địa điểm lý tưởng để ngắm công trình nào?", opts: ["Cầu Rạch Miễu", "Cầu Mỹ Thuận", "Phà Đình Khao", "Chợ nổi Trà Ôn"], ans: "Cầu Mỹ Thuận" },
+            { q: "Khu lưu niệm tại Long Hồ, Vĩnh Long được lập ra để tưởng nhớ vị lãnh đạo nào?", opts: ["Cố Thủ tướng Võ Văn Kiệt", "Chủ tịch Hội đồng Bộ trưởng Phạm Hùng", "Bí thư Nguyễn Văn Linh", "Tôn Đức Thắng"], ans: "Chủ tịch Hội đồng Bộ trưởng Phạm Hùng" },
+            { q: "Khu tưởng niệm cố Thủ tướng Võ Văn Kiệt (Vườn ông Sáu Dân) nằm ở huyện của tỉnh Vĩnh Long trước đâynào?", opts: ["Vũng Liêm", "Tam Bình", "Long Hồ", "Trà Ôn"], ans: "Vũng Liêm" },
+            { q: "Làng nghề Phước Định ở cù lao An Bình chuyên trồng loại cây cảnh nào dịp Tết?", opts: ["Tắc kiểng", "Hoa Cúc", "Mai vàng nguyên thủy", "Bonsai linh sam"], ans: "Mai vàng nguyên thủy" },
+            { q: "Di sản công nghiệp nằm dọc kênh rạch ở huyện Mang Thít (trước đây) được mệnh danh là gì?", opts: ["Vương quốc gốm đỏ", "Thành phố gạch nung", "Đảo đất sét", "Làng gốm Bát Tràng miền Nam"], ans: "Vương quốc gốm đỏ" },
+            { q: "Nhà cổ Cai Cường ở Bình Hòa Phước có kiến trúc mặt ngoài theo phong cách nào?", opts: ["Nhà rường Huế", "Kiến trúc Pháp", "Chữ Đinh Nam Bộ", "Gothic"], ans: "Kiến trúc Pháp" },
+            { q: "Nhà cổ Đại Điền (Nhà cổ Huỳnh Phủ) ở Thạnh Phú (cũ) nổi tiếng với điều gì?", opts: ["Xây bằng gạch đỏ", "Có 48 cột gỗ to và chạm khắc hoa văn tinh xảo", "Lợp mái tôn", "Nằm giữa chợ"], ans: "Có 48 cột gỗ to và chạm khắc hoa văn tinh xảo" },
+            { q: "Thánh đường giáo xứ Mặc Bắc ở Tiểu Cần có tuổi đời bao nhiêu năm?", opts: ["Gần 140 năm", "50 năm", "Hơn 200 năm", "100 năm"], ans: "Gần 140 năm" },
+            { q: "Văn Thánh Miếu Vĩnh Long được mệnh danh là gì của phương Nam?", opts: ["Chùa học", "Quốc Tử Giám của phương Nam", "Lò luyện thi", "Đền tri thức"], ans: "Quốc Tử Giám của phương Nam" }
+        ];
+
+        let currentQuestions = [];
+        let currentIdx = 0;
+        let score = 0;
+
+        function initGame() {
+            // Lấy ngẫu nhiên 10 câu từ ngân hàng 50 câu
+            currentQuestions = questionBank.sort(() => 0.5 - Math.random()).slice(0, 10);
+            currentIdx = 0;
+            score = 0;
+            updateScoreBoard();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const qData = currentQuestions[currentIdx];
+            document.getElementById('question-text').innerText = qData.q;
+            
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+            
+            const shuffledOpts = [...qData.opts].sort(() => 0.5 - Math.random());
+            
+            shuffledOpts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, qData.ans);
+                grid.appendChild(btn);
+            });
+            updateScoreBoard();
+        }
+
+        function checkAnswer(btn, selected, correct) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                score += 10;
+            } else {
+                btn.classList.add('wrong');
+                allBtns.forEach(b => {
+                    if (b.innerText === correct) b.classList.add('correct');
+                });
+            }
+
+            updateScoreBoard();
+
+            setTimeout(() => {
+                currentIdx++;
+                if (currentIdx < currentQuestions.length) {
+                    loadQuestion();
+                } else {
+                    endGame();
+                }
+            }, 1500);
+        }
+
+        function updateScoreBoard() {
+            document.getElementById('current-q').innerText = (currentIdx < 10 ? currentIdx + 1 : 10);
+            document.getElementById('score').innerText = score;
+        }
+
+        function endGame() {
+            document.getElementById('question-box').style.display = 'none';
+            
+            // XÉT ĐIỀU KIỆN PASS: ĐÚNG 8 CÂU (80 ĐIỂM) TRỞ LÊN
+            if(score >= 80) {
+                document.getElementById('name-entry-box').style.display = 'block';
+                document.getElementById('win-score').innerText = score;
+            } else {
+                document.getElementById('fail-box').style.display = 'block';
+                document.getElementById('fail-score').innerText = score / 10;
+            }
+        }
+
+        function generatePassport() {
+            const nameInput = document.getElementById('student-name').value.trim();
+            if (nameInput === '') {
+                alert('Em nhớ nhập tên để in lên Hộ chiếu nha!');
+                return;
+            }
+
+            document.getElementById('name-entry-box').style.display = 'none';
+            document.getElementById('passport-box').style.display = 'block';
+            document.getElementById('pass-name').innerText = nameInput;
+            document.getElementById('pass-score').innerText = score;
+        }
+
+        // Khởi động
+        initGame();
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đại Sứ AI - Hệ Thống Du Lịch Thông Minh</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            padding-top: 80px; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* THANH ĐIỀU HƯỚNG */
+        #global-nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            background: white; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000; gap: 10px;
+        }
+        .nav-btn { padding: 10px 18px; background: #e0f2f1; color: #00796b; text-decoration: none; border-radius: 50px; font-weight: bold; transition: 0.3s; font-size: 0.9rem; }
+        .nav-btn:hover, .nav-btn.active { background: #00796b; color: white; }
+        
+        /* KHU VỰC CHATBOT - ĐÃ ĐƯỢC THU NHỎ CHIỀU CAO */
+        .chat-wrapper {
+            width: 95%;
+            max-width: 1000px;
+            height: 550px; /* Giảm từ 800px xuống 550px để vừa màn hình hơn */
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 4px solid #00796b;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-header {
+            background: #00796b;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .iframe-container {
+            flex: 1;
+            width: 100%;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Tối ưu hiển thị cho thiết bị di động */
+        @media (max-width: 768px) {
+            #global-nav { justify-content: flex-start; overflow-x: auto; padding: 0 10px; white-space: nowrap; }
+            .chat-wrapper { 
+                width: 98%; 
+                height: 65vh; /* Sử dụng đơn vị vh để tự động co dãn theo màn hình điện thoại */
+                margin-top: 10px; 
+            }
+            body { padding-top: 90px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="global-nav">
+        <a href="home.html" class="nav-btn">🏠 Trang Chủ</a>
+        <a href="ban-do.html" class="nav-btn">📍 Bản Đồ Khám Phá</a>
+        <a href="chatbot.html" class="nav-btn active">💬 Trò Chuyện Cùng AI</a>
+        <a href="video.html" class="nav-btn">📺 Rạp Phim Miệt Vườn</a>
+    </div>
+
+    <div class="chat-wrapper">
+        <div class="chat-header">
+            <h3> ĐẠI SỨ VĂN HÓA NHÍ - LỚP 6/2</h3>
+        </div>
+        <div class="iframe-container">
+            <iframe
+                src="https://www.chatbase.co/chatbot-iframe/TSSrGXhyfc1V4J2fYxrGJ"
+                allow="clipboard-write"
+            ></iframe>
+        </div>
+    </div>
+</body>
+</html>
